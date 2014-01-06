@@ -1,0 +1,25 @@
+{
+    "name": "gotterdemarung/omega-framework",
+    "type": "library",
+    "description": "Omega Framework",
+    "keywords": ["framework", "omega", "php", "kiss"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Gotterdemarung",
+            "email": "gotterdemarung@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3",
+        "symfony/http-foundation": "2.4.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.28",
+        "kherge/box": "~2.0"
+    },
+    "autoload": {
+        "psr-0": { "Omega\\": "src/" }
+    },
+    "minimum-stability": "dev"
+}
