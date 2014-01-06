@@ -14,7 +14,8 @@ use Omega\Core\RunnableInterface;
  * @package Omega
  * @todo tests
  */
-abstract class Application implements RunnableInterface {
+abstract class Application implements RunnableInterface
+{
 
     /**
      * @var ConfigurationInterface
@@ -57,12 +58,18 @@ abstract class Application implements RunnableInterface {
         // Setting internal encoding
         if (function_exists('mb_internal_encoding')) {
             mb_internal_encoding(
-                $this->getConfiguration()->getString(ConfigurationInterface::PATH_INTERNAL_ENCODING)
+                $this->getConfiguration()->getString(
+                    ConfigurationInterface::PATH_INTERNAL_ENCODING
+                )
             );
         }
 
         // Setting timezone
-        if ($this->getConfiguration()->has(ConfigurationInterface::PATH_TIMEZONE)) {
+        if (
+            $this->getConfiguration()->has(
+                ConfigurationInterface::PATH_TIMEZONE
+            )
+        ) {
             $answer = date_default_timezone_set(
                 $this->getConfiguration()->getString(
                     ConfigurationInterface::PATH_TIMEZONE
@@ -80,13 +87,21 @@ abstract class Application implements RunnableInterface {
 
         // Setting error reporting and exceptions
         error_reporting(
-            $this->getConfiguration()->getInteger(ConfigurationInterface::PATH_ERROR_REPORTING)
+            $this->getConfiguration()->getInteger(
+                ConfigurationInterface::PATH_ERROR_REPORTING
+            )
         );
         ini_set(
             'display_errors',
-            $this->getConfiguration()->getBool(ConfigurationInterface::PATH_DISPLAY_ERRORS)
+            $this->getConfiguration()->getBool(
+                ConfigurationInterface::PATH_DISPLAY_ERRORS
+            )
         );
-        if ($this->getConfiguration()->getBool(ConfigurationInterface::PATH_CATCH_PHP_ERRORS)) {
+        if (
+            $this->getConfiguration()->getBool(
+                ConfigurationInterface::PATH_CATCH_PHP_ERRORS
+            )
+        ) {
             set_error_handler(array($this, 'onPhpError'));
         }
     }

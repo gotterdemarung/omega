@@ -16,6 +16,8 @@
     },
     "require-dev": {
         "phpunit/phpunit": "3.7.28",
+        "squizlabs/php_codesniffer": "dev-phpcs-fixer",
+        "phpmd/phpmd": "dev-master",
         "kherge/box": "~2.0"
     },
     "autoload": {

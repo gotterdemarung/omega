@@ -15,7 +15,8 @@ use Omega\View\PrintableInterface;
  * @package Omega\View\Syndication
  * @todo tests needed
  */
-class RSS implements PrintableInterface {
+class RSS implements PrintableInterface
+{
     static private $_allowedHeaders = array(
         'title'         => 'string',
         'description'   => 'string',
@@ -110,19 +111,51 @@ class RSS implements PrintableInterface {
         foreach ($this->_headers as $key => $value) {
             $target->write("\t");
             $target->write('<' . $key . '>');
-            $target->write($this->_envelope(self::$_allowedHeaders[$key], $value));
+            $target->write(
+                $this->_envelope(self::$_allowedHeaders[$key], $value)
+            );
             $target->write('</' . $key . '>');
             $target->writeln();
         }
         foreach ($this->_items as $item) {
             $target->writeln("\t<item>");
-            $target->writeln("\t\t<title>" . $this->_envelope('string', $item->getSyndicationTitle()) . '</title>');
-            $target->writeln("\t\t<link>" . $this->_envelope('string', $item->getSyndicationUrl()) . '</link>');
-            $target->writeln("\t\t<guid isPermaLink=\"true\">" . $this->_envelope('string', $item->getSyndicationUrl()) . '</guid>');
-            $target->writeln("\t\t<description>" . $this->_envelope('string', $item->getSyndicationDescription()) . '</description>');
-            $target->writeln("\t\t<pubDate>" . $this->_envelope('time', $item->getSyndicationPublishingDate()) . '</pubDate>');
+            $target->writeln(
+                "\t\t<title>"
+                . $this->_envelope('string', $item->getSyndicationTitle())
+                . '</title>'
+            );
+            $target->writeln(
+                "\t\t<link>"
+                . $this->_envelope('string', $item->getSyndicationUrl())
+                . '</link>'
+            );
+            $target->writeln(
+                "\t\t<guid isPermaLink=\"true\">"
+                . $this->_envelope('string', $item->getSyndicationUrl())
+                . '</guid>'
+            );
+            $target->writeln(
+                "\t\t<description>"
+                . $this->_envelope('string', $item->getSyndicationDescription())
+                . '</description>'
+            );
+            $target->writeln(
+                "\t\t<pubDate>"
+                . $this->_envelope(
+                    'time',
+                    $item->getSyndicationPublishingDate()
+                )
+                . '</pubDate>'
+            );
             if ($item->getSyndicationAuthorEmail() !== null) {
-                $target->writeln("\t\t<author>" . $this->_envelope('string', $item->getSyndicationAuthorEmail()) . '</author>');
+                $target->writeln(
+                    "\t\t<author>"
+                    . $this->_envelope(
+                        'string',
+                        $item->getSyndicationAuthorEmail()
+                    )
+                    . '</author>'
+                );
             }
             $target->writeln("\t</item>");
         }

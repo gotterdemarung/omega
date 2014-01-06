@@ -8,7 +8,8 @@ namespace Omega\IO;
  *
  * @package Omega\IO
  */
-interface HTTPPrintWriterInterface extends PrintWriterInterface {
+interface HTTPPrintWriterInterface extends PrintWriterInterface
+{
     /**
      * Prints HTTP header
      *

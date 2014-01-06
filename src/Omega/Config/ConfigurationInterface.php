@@ -3,7 +3,8 @@
 namespace Omega\Config;
 
 
-interface ConfigurationInterface {
+interface ConfigurationInterface
+{
 
     const PATH_INTERNAL_ENCODING = 'application.php.encoding';
     const PATH_TIMEZONE          = 'application.php.timezone';

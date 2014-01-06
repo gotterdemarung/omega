@@ -5,7 +5,8 @@ namespace Omega\Routing;
 use Omega\DI\HTTPRequestDI;
 use Symfony\Component\HttpFoundation\Request;
 
-class ReflectionRegexRoute implements RouteInterface, HTTPRequestDI {
+class ReflectionRegexRoute implements RouteInterface, HTTPRequestDI
+{
 
     /**
      * @var Request
@@ -95,7 +96,9 @@ class ReflectionRegexRoute implements RouteInterface, HTTPRequestDI {
 
             // Reading from query
             if (!$request->query->has($parameterName)) {
-                throw new \BadMethodCallException("Required parameter `{$parameterName}` not present");
+                throw new \BadMethodCallException(
+                    "Required parameter `{$parameterName}` not present"
+                );
             }
             $invokeData[] = $request->query->get($parameterName);
         }

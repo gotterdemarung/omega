@@ -40,7 +40,8 @@ class StdOut implements HTTPPrintWriterInterface
     }
 
     /**
-     * Prints an object  to standard output and puts a newline character after it
+     * Prints an object  to standard output and puts
+     * a newline character after it
      *
      * @param mixed|null $object
      * @return void

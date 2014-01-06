@@ -2,7 +2,8 @@
 
 namespace Omega\Config;
 
-class ConfigurationException extends \Exception {
+class ConfigurationException extends \Exception
+{
 
     /**
      * @var string
@@ -17,7 +18,11 @@ class ConfigurationException extends \Exception {
      */
     private $_details;
 
-    public function __construct($key, ConfigurationInterface $cnf = null, $details = null)
+    public function __construct(
+        $key,
+        ConfigurationInterface $cnf = null,
+        $details = null
+    )
     {
         parent::__construct("Configuration key `{$key}` not found or wrong");
         $this->_key = $key;

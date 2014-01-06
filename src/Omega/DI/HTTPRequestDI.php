@@ -5,7 +5,8 @@ namespace Omega\DI;
 
 use Symfony\Component\HttpFoundation\Request;
 
-interface HTTPRequestDI {
+interface HTTPRequestDI
+{
     /**
      * Sets HTTP Foundation Request
      *

@@ -3,7 +3,8 @@
 namespace Omega\Core;
 
 
-interface RunnableInterface {
+interface RunnableInterface
+{
     /**
      * Runs execution
      *

@@ -5,7 +5,8 @@ namespace Omega\View\Syndication;
 
 use Omega\View\PrintableInterface;
 
-interface ItemInterface extends PrintableInterface {
+interface ItemInterface extends PrintableInterface
+{
     /**
      * Returns title of item
      *
