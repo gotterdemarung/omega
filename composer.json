@@ -19,7 +19,10 @@
         "kherge/box": "~2.0"
     },
     "autoload": {
-        "psr-0": { "Omega\\": "src/" }
+        "psr-0": {
+            "Omega\\": "src/",
+            "OmegaTest\\": "test/unit/"
+        }
     },
     "minimum-stability": "dev"
 }
