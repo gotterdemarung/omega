@@ -3,7 +3,8 @@
 namespace Omega\Cache;
 
 
-interface CacheInterface extends \ArrayAccess {
+interface CacheInterface extends \ArrayAccess
+{
 
     /**
      * Returns clone of current CacheInterface with

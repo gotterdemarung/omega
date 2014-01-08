@@ -8,7 +8,8 @@ namespace Omega\Cache;
  * @package Omega\Cache
  * @todo tests
  */
-class Memcache implements CacheInterface {
+class Memcache implements CacheInterface
+{
 
     /**
      * @var string
@@ -29,7 +30,11 @@ class Memcache implements CacheInterface {
      * @param int            $ttl
      * @param \Memcache|null $memcacheObject
      */
-    public function __construct($cachePrefix, $ttl, \Memcache $memcacheObject = null)
+    public function __construct(
+        $cachePrefix,
+        $ttl,
+        \Memcache $memcacheObject = null
+    )
     {
         if ($memcacheObject === null) {
             $this->_memcache = new \Memcache();
@@ -46,7 +51,7 @@ class Memcache implements CacheInterface {
      * @param bool   $persistent
      * @param int    $weight
      * @param int    $timeout
-     * @param $retry_interval
+     * @param int    $retryInterval
      */
     public function addServer(
         $host,
@@ -54,12 +59,13 @@ class Memcache implements CacheInterface {
         $persistent,
         $weight,
         $timeout,
-        $retry_interval
-    ) {
+        $retryInterval
+    )
+    {
         // Registering server
         $this->_memcache->addserver(
             $host, $port, $persistent, $weight,
-            $timeout, $retry_interval
+            $timeout, $retryInterval
         );
     }
 
