@@ -90,6 +90,17 @@ class Hardcoded implements ConfigurationInterface
     }
 
     /**
+     * Returns array
+     *
+     * @param $path
+     * @return array
+     */
+    public function getArray($path)
+    {
+        // TODO: Implement getArray() method.
+    }
+
+    /**
      * Returns boolean, and if not set - $default
      *
      * @param string $path

@@ -7,6 +7,11 @@ use Omega\Config\ConfigurationException;
 use Omega\Config\ConfigurationInterface;
 use Omega\Config\Defaults;
 use Omega\Core\RunnableInterface;
+use Omega\DI\ServiceLocatorInterface;
+use Omega\DI\ServiceLocators\Common as CommonServiceLocator;
+use Omega\Events\ChannelInterface;
+use Omega\Events\DebugStringEvent;
+use Omega\Events\EventInterface;
 
 /**
  * Main application abstraction
@@ -14,19 +19,32 @@ use Omega\Core\RunnableInterface;
  * @package Omega
  * @todo tests
  */
-abstract class Application implements RunnableInterface
+abstract class Application implements RunnableInterface, ChannelInterface
 {
-
     /**
      * @var ConfigurationInterface
      */
     private $_configuration;
 
-    public function __construct(ConfigurationInterface $configuration)
+    /**
+     * @var ServiceLocatorInterface
+     */
+    private $_serviceLocator;
+
+    public function __construct(ConfigurationInterface $configuration, ServiceLocatorInterface $sli = null)
     {
         $this->_configuration = clone $configuration;
+        if ($sli === null) {
+            $this->_serviceLocator = new CommonServiceLocator();
+        } else {
+            $this->_serviceLocator = $sli;
+        }
         Defaults::getInstance()->injectDefaultsInto($this->_configuration);
+        $this->setUpServiceLocator();
+        $this->setUpEventsChannel();
         $this->setUpEnvironment();
+
+        $this->sendEvent(new DebugStringEvent($this, 'Application constructed'));
     }
 
     /**
@@ -40,12 +58,67 @@ abstract class Application implements RunnableInterface
     }
 
     /**
+     * Returns application's service locator
+     *
+     * @return ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->_serviceLocator;
+    }
+
+    /**
      * Runs execution
      *
      * @return void
      * @throws \Exception
      */
     public abstract  function run();
+
+    /**
+     * Sets up events channel
+     *
+     * @return void
+     */
+    public function setUpEventsChannel()
+    {
+        $serviceKey = 'Omega\Events\ChannelInterface';
+
+        if ($this->getServiceLocator()->hasService($serviceKey)) {
+            // Already set
+            return;
+        }
+
+        // TODO
+    }
+
+    /**
+     * Sets up default service location implementations
+     *
+     * @return void
+     */
+    public function setUpServiceLocator()
+    {
+        // Reading configuration values
+        if (
+            $this->getConfiguration()->has(
+                ConfigurationInterface::PATH_APP_IMPLEMENTATIONS
+            )
+        ) {
+            // Registering configured injections
+            foreach (
+                $this->getConfiguration()->getArray(
+                    ConfigurationInterface::PATH_APP_IMPLEMENTATIONS
+                )
+                as $serviceName => $serviceImplementation
+            ) {
+                $this->getServiceLocator()->registerService(
+                    $serviceName,
+                    $serviceImplementation
+                );
+            }
+        }
+    }
 
     /**
      * Sets up default environment
@@ -122,5 +195,18 @@ abstract class Application implements RunnableInterface
             $errno
         );
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function sendEvent(EventInterface $event)
+    {
+        $serviceKey = 'Omega\Events\ChannelInterface';
+
+        if ($this->getServiceLocator()->hasService($serviceKey)) {
+            $this->getServiceLocator()->getService($serviceKey)->sendEvent($event);
+        }
+    }
+
 
 }

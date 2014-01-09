@@ -6,11 +6,12 @@ namespace Omega\Config;
 interface ConfigurationInterface
 {
 
-    const PATH_INTERNAL_ENCODING = 'application.php.encoding';
-    const PATH_TIMEZONE          = 'application.php.timezone';
-    const PATH_DISPLAY_ERRORS    = 'application.php.displayErrors';
-    const PATH_ERROR_REPORTING   = 'application.php.errorReporting';
-    const PATH_CATCH_PHP_ERRORS  = 'application.php.catchPhpErrors';
+    const PATH_INTERNAL_ENCODING    = 'application.php.encoding';
+    const PATH_TIMEZONE             = 'application.php.timezone';
+    const PATH_DISPLAY_ERRORS       = 'application.php.displayErrors';
+    const PATH_ERROR_REPORTING      = 'application.php.errorReporting';
+    const PATH_CATCH_PHP_ERRORS     = 'application.php.catchPhpErrors';
+    const PATH_APP_IMPLEMENTATIONS  = 'application.services';
 
     /**
      * Sets configuration value
@@ -63,6 +64,14 @@ interface ConfigurationInterface
      * @throws ConfigurationException
      */
     public function getFloat($path);
+
+    /**
+     * Returns array
+     *
+     * @param $path
+     * @return array
+     */
+    public function getArray($path);
 
     /**
      * Returns boolean, and if not set - $default

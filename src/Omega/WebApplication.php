@@ -4,7 +4,9 @@ namespace Omega;
 
 use Omega\Config\ConfigurationInterface;
 use Omega\DI\HTTPRequestDI;
+use Omega\Events\DebugStringEvent;
 use Omega\Routing\CommonRouter;
+use Omega\Routing\RouteInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -13,7 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
  * @package Omega
  * @todo tests
  */
-class WebApplication extends Application implements HTTPRequestDI
+class WebApplication extends Application
 {
     /**
      * @var Request
@@ -24,6 +26,8 @@ class WebApplication extends Application implements HTTPRequestDI
     {
         parent::__construct($config);
         $this->setRequest(Request::createFromGlobals());
+
+        $this->sendEvent(new DebugStringEvent($this, 'Web application constructed'));
     }
 
     /**
@@ -48,6 +52,24 @@ class WebApplication extends Application implements HTTPRequestDI
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function setUpServiceLocator()
+    {
+        parent::setUpServiceLocator();
+
+        // Binding router
+        $serviceKey = 'Omega\Routing\RouterInterface';
+        if (!$this->getServiceLocator()->getService($serviceKey)) {
+            $this->getServiceLocator()->registerService(
+                $serviceKey,
+                new CommonRouter()
+            );
+        }
+    }
+
+
+    /**
      * Runs execution
      *
      * @return void
@@ -55,9 +77,11 @@ class WebApplication extends Application implements HTTPRequestDI
      */
     public function run()
     {
-        $router = new CommonRouter();
-        $router->setRequest($this->getRequest());
-        $router->run();
+        /** @var RouteInterface $router */
+        $router = $this->getServiceLocator()->getService(
+            'Omega\Routing\RouterInterface'
+        );
+        $router->process($this->getRequest());
     }
 
 } 
