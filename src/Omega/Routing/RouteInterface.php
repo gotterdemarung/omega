@@ -5,7 +5,7 @@ namespace Omega\Routing;
 use Omega\Core\RunnableInterface;
 use Symfony\Component\HttpFoundation\Request;
 
-interface RouteInterface extends RunnableInterface
+interface RouteInterface
 {
     /**
      * Returns true if current route can satisfy provided request
@@ -14,4 +14,12 @@ interface RouteInterface extends RunnableInterface
      * @return bool
      */
     public function isSatisfied(Request $request);
+
+    /**
+     * Starts processing
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function process(Request $request);
 }

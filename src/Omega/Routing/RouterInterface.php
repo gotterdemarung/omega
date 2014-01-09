@@ -2,10 +2,7 @@
 
 namespace Omega\Routing;
 
-
-use Omega\Core\RunnableInterface;
-
-interface RouterInterface extends RunnableInterface, \Countable
+interface RouterInterface extends RouteInterface, \Countable
 {
     /**
      * Adds route to routes pool

@@ -5,13 +5,8 @@ namespace Omega\Routing;
 use Omega\DI\HTTPRequestDI;
 use Symfony\Component\HttpFoundation\Request;
 
-class ReflectionRegexRoute implements RouteInterface, HTTPRequestDI
+class ReflectionRegexRoute implements RouteInterface
 {
-
-    /**
-     * @var Request
-     */
-    private $_request;
     /**
      * @var string
      */
@@ -33,27 +28,6 @@ class ReflectionRegexRoute implements RouteInterface, HTTPRequestDI
     }
 
     /**
-     * Sets HTTP Foundation Request
-     *
-     * @param Request $request
-     * @return void
-     */
-    public function setRequest(Request $request)
-    {
-        $this->_request = $request;
-    }
-
-    /**
-     * Returns HTTP Foundation Request
-     *
-     * @return Request
-     */
-    public function getRequest()
-    {
-        return $this->_request;
-    }
-
-    /**
      * Returns true if current route can satisfy provided request
      *
      * @param Request $request
@@ -67,26 +41,21 @@ class ReflectionRegexRoute implements RouteInterface, HTTPRequestDI
     /**
      * Runs execution
      *
+     * @param Request $request
+     * @throws \BadMethodCallException
      * @return void
-     * @throws \Exception
      */
-    public function run()
+    public function process(Request $request)
     {
         // Creating reflection instance
         $reflection = new \ReflectionClass($this->_controller);
         $method = $reflection->getMethod($this->_method);
 
         // Reading request
-        $request = $this->getRequest();
         if ($request === null && $method->getNumberOfParameters() > 0) {
             throw new \BadMethodCallException(
                 'HTTP Foundation Request not set'
             );
-        }
-
-        // Setting known DI instances
-        if ($this->_controller instanceof HTTPRequestDI && $request !== null) {
-            $this->_controller->setRequest($request);
         }
 
         // Iterating over parameters

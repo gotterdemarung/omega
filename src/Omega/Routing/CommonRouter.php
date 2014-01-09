@@ -11,39 +11,9 @@ class CommonRouter implements RouterInterface, HTTPRequestDI
     /**
      * List of registered routes
      *
-     * @var RouterInterface[]
+     * @var RouteInterface[]
      */
     private $_routes = array();
-
-    /**
-     * @var Request
-     */
-    private $_request = null;
-
-    /**
-     * Sets Http Foundation Request for router
-     *
-     * @param Request $request
-     */
-    public function setRequest(Request $request)
-    {
-        $this->_request = $request;
-    }
-
-    /**
-     * Returns Http Foundation Request for router
-     * If not setted before - creates new, based on globals, but dont
-     * cache it
-     *
-     * @return Request
-     */
-    public function getRequest()
-    {
-        if ($this->_request == null) {
-            return Request::createFromGlobals();
-        }
-        return $this->_request;
-    }
 
     /**
      * Adds route to routes pool
@@ -57,15 +27,31 @@ class CommonRouter implements RouterInterface, HTTPRequestDI
     }
 
     /**
+     * Returns true if current route can satisfy provided request
+     *
+     * @param Request $request
+     * @return bool
+     */
+    public function isSatisfied(Request $request)
+    {
+        foreach ($this->_routes as $route) {
+            if ($route->isSatisfied($request)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Runs execution
      *
+     * @param Request $request
+     * @throws NoRouteException
      * @return void
-     * @throws \Exception
      */
-    public function run()
+    public function process(Request $request)
     {
-        $request = $this->getRequest();
-
         if ($this->count() == 0) {
             // No registered routes
             throw new NoRouteException($request);
@@ -79,11 +65,7 @@ class CommonRouter implements RouterInterface, HTTPRequestDI
             }
 
             try {
-                if ($route instanceof HTTPRequestDI) {
-                    /** @var HTTPRequestDI $route */
-                    $route->setRequest($request);
-                }
-                $route->run();
+                $route->process($request);
                 $routeFound = true;
                 break;
             } catch (NoRouteException $nre) {
