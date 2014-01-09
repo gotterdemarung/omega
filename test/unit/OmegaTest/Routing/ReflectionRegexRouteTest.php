@@ -35,7 +35,7 @@ class ReflectionRegexRouteTest extends Test {
     {
         $marker = new ReflectionRegexRouteTestController();
         $r = new ReflectionRegexRoute(null, $marker, 'zeroArguments');
-        $r->run();
+        $r->process(null);
         $this->assertSame('zero', $marker->value);
     }
 
@@ -43,11 +43,10 @@ class ReflectionRegexRouteTest extends Test {
     {
         $marker = new ReflectionRegexRouteTestController();
         $r = new ReflectionRegexRoute(null, $marker, 'twoArguments');
-        $r->setRequest(Request::create(
+        $r->process(Request::create(
             'http://localhost/?one=11!!&two=Tw0',
             'GET'
         ));
-        $r->run();
         $this->assertSame('11!!|Tw0', $marker->value);
     }
 
@@ -59,7 +58,7 @@ class ReflectionRegexRouteTest extends Test {
     {
         $marker = new ReflectionRegexRouteTestController();
         $r = new ReflectionRegexRoute(null, $marker, 'twoArguments');
-        $r->run();
+        $r->process(null);
         $this->fail();
     }
 
@@ -71,58 +70,17 @@ class ReflectionRegexRouteTest extends Test {
     {
         $marker = new ReflectionRegexRouteTestController();
         $r = new ReflectionRegexRoute(null, $marker, 'twoArguments');
-        $r->setRequest(Request::create(
+        $r->process(Request::create(
             'http://localhost/?one=11!!',
             'GET'
         ));
-        $r->run();
         $this->fail();
     }
-
-    public function testRequestDI()
-    {
-        $marker = new ReflectionRegexRouteTestController();
-        $r = new ReflectionRegexRoute(null, $marker, 'zeroArguments');
-        $r->run();
-        $this->assertNull($marker->getRequest());
-
-        $r->setRequest(Request::create(
-            'http://localhost/?helloWorld',
-            'GET'
-        ));
-        $r->run();
-        $this->assertNotNull($marker->getRequest());
-        $this->assertSame('http://localhost/?helloWorld', $marker->getRequest()->getUri());
-    }
-
 }
 
-class ReflectionRegexRouteTestController implements HTTPRequestDI
+class ReflectionRegexRouteTestController
 {
     public $value;
-    private $_request;
-
-    /**
-     * Sets HTTP Foundation Request
-     *
-     * @param Request $request
-     * @return void
-     */
-    public function setRequest(Request $request)
-    {
-        $this->_request = $request;
-    }
-
-    /**
-     * Returns HTTP Foundation Request
-     *
-     * @return Request
-     */
-    public function getRequest()
-    {
-        return $this->_request;
-    }
-
 
     public function zeroArguments()
     {

@@ -41,11 +41,11 @@ class ReflectionRegexRoute implements RouteInterface
     /**
      * Runs execution
      *
-     * @param Request $request
+     * @param Request|null $request
      * @throws \BadMethodCallException
      * @return void
      */
-    public function process(Request $request)
+    public function process(Request $request = null)
     {
         // Creating reflection instance
         $reflection = new \ReflectionClass($this->_controller);

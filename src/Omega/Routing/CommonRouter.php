@@ -46,11 +46,11 @@ class CommonRouter implements RouterInterface, HTTPRequestDI
     /**
      * Runs execution
      *
-     * @param Request $request
+     * @param Request|null $request
      * @throws NoRouteException
      * @return void
      */
-    public function process(Request $request)
+    public function process(Request $request = null)
     {
         if ($this->count() == 0) {
             // No registered routes

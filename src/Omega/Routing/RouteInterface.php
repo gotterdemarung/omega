@@ -18,8 +18,8 @@ interface RouteInterface
     /**
      * Starts processing
      *
-     * @param Request $request
+     * @param Request|null $request
      * @return void
      */
-    public function process(Request $request);
+    public function process(Request $request = null);
 }
