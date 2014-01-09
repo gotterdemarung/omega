@@ -14,12 +14,7 @@ class Common implements ServiceLocatorInterface
     private $_implementations = array();
 
     /**
-     * Registers service implementation
-     *
-     * @param string $serviceName Name of service
-     * @param string|object $classOrObject If object provided, works as singleton, creates instance otherwise
-     * @throws \InvalidArgumentException
-     * @return mixed
+     * {@inheritdoc}
      */
     public function registerService($serviceName, $classOrObject)
     {

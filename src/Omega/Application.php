@@ -31,7 +31,10 @@ abstract class Application implements RunnableInterface, ChannelInterface
      */
     private $_serviceLocator;
 
-    public function __construct(ConfigurationInterface $configuration, ServiceLocatorInterface $sli = null)
+    public function __construct(
+        ConfigurationInterface $configuration,
+        ServiceLocatorInterface $sli = null
+    )
     {
         $this->_configuration = clone $configuration;
         if ($sli === null) {
@@ -44,7 +47,9 @@ abstract class Application implements RunnableInterface, ChannelInterface
         $this->setUpEventsChannel();
         $this->setUpEnvironment();
 
-        $this->sendEvent(new DebugStringEvent($this, 'Application constructed'));
+        $this->sendEvent(
+            new DebugStringEvent($this, 'Application constructed')
+        );
     }
 
     /**
@@ -204,7 +209,9 @@ abstract class Application implements RunnableInterface, ChannelInterface
         $serviceKey = 'Omega\Events\ChannelInterface';
 
         if ($this->getServiceLocator()->hasService($serviceKey)) {
-            $this->getServiceLocator()->getService($serviceKey)->sendEvent($event);
+            $this->getServiceLocator()
+                ->getService($serviceKey)
+                ->sendEvent($event);
         }
     }
 

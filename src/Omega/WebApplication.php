@@ -27,7 +27,9 @@ class WebApplication extends Application
         parent::__construct($config);
         $this->setRequest(Request::createFromGlobals());
 
-        $this->sendEvent(new DebugStringEvent($this, 'Web application constructed'));
+        $this->sendEvent(
+            new DebugStringEvent($this, 'Web application constructed')
+        );
     }
 
     /**

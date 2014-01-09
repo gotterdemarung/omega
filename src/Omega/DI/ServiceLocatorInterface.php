@@ -9,7 +9,8 @@ interface ServiceLocatorInterface
      * Registers service implementation
      *
      * @param string        $serviceName   Name of service
-     * @param string|object $classOrObject If object provided, works as singleton, creates instance otherwise
+     * @param string|object $classOrObject <p>If object provided,
+     * works as singleton, creates instance otherwise</p>
      * @return mixed
      */
     public function registerService($serviceName, $classOrObject);
