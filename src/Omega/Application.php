@@ -39,7 +39,7 @@ abstract class Application implements RunnableInterface, ChannelInterface
         } else {
             $this->_serviceLocator = $sli;
         }
-        Defaults::getInstance()->injectDefaultsInto($this->_configuration);
+        Defaults::getInstance()->deepInjectDefaults($this->_configuration);
         $this->setUpServiceLocator();
         $this->setUpEventsChannel();
         $this->setUpEnvironment();

@@ -3,7 +3,7 @@
 namespace Omega\Config;
 
 
-class Defaults extends Hardcoded
+class Defaults extends ChainNodeConfig
 {
     /**
      * @return Defaults

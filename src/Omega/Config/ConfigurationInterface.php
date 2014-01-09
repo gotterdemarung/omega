@@ -110,10 +110,17 @@ interface ConfigurationInterface
     public function getFloatSafe($path, $default);
 
     /**
+     * Returns flat representations of config
+     *
+     * @return array
+     */
+    public function getFlatList();
+
+    /**
      * Injects own values into provided config if they are not set
      *
-     * @param ConfigurationInterface $config
+     * @param ConfigurationInterface $defaults
      * @return void
      */
-    public function injectDefaultsInto(ConfigurationInterface $config);
+    public function deepInjectDefaults(ConfigurationInterface $defaults);
 }

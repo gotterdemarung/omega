@@ -2,6 +2,8 @@
 
 namespace Omega\Config;
 
+use Omega\Type\ChainNode as ChainNodeType;
+
 /**
  * Class Hardcoded
  * Hardcoded implementation of configuration
@@ -9,14 +11,12 @@ namespace Omega\Config;
  * @package Omega\Config
  * @todo tests
  */
-class Hardcoded implements ConfigurationInterface
+class ChainNodeConfig extends ChainNodeType implements ConfigurationInterface
 {
-    /**
-     * Data container
-     *
-     * @var mixed[]
-     */
-    private $_container = array();
+    public function __construct($data)
+    {
+        parent::__construct($data);
+    }
 
     /**
      * Returns true if current configuration has provided path
@@ -26,7 +26,7 @@ class Hardcoded implements ConfigurationInterface
      */
     public function has($path)
     {
-        return isset($this->_container[$path]);
+        return $this->path($path)->isNull();
     }
 
 
@@ -39,7 +39,7 @@ class Hardcoded implements ConfigurationInterface
      */
     public function set($path, $value)
     {
-        $this->_container[$path] = $value;
+        $this->path($path)->set($value);
     }
 
     /**
@@ -51,7 +51,7 @@ class Hardcoded implements ConfigurationInterface
      */
     public function getBool($path)
     {
-        // TODO: Implement getBool() method.
+        return $this->path($path)->isTrue();
     }
 
     /**
@@ -62,7 +62,7 @@ class Hardcoded implements ConfigurationInterface
      */
     public function getString($path)
     {
-        // TODO: Implement getString() method.
+        return $this->path($path)->getString();
     }
 
     /**
@@ -74,7 +74,7 @@ class Hardcoded implements ConfigurationInterface
      */
     public function getInteger($path)
     {
-        // TODO: Implement getInteger() method.
+        return $this->path($path)->getInt();
     }
 
     /**
@@ -86,7 +86,7 @@ class Hardcoded implements ConfigurationInterface
      */
     public function getFloat($path)
     {
-        // TODO: Implement getFloat() method.
+        return $this->path($path)->getFloat();
     }
 
     /**
@@ -97,7 +97,7 @@ class Hardcoded implements ConfigurationInterface
      */
     public function getArray($path)
     {
-        // TODO: Implement getArray() method.
+        return $this->path($path);
     }
 
     /**
@@ -109,7 +109,11 @@ class Hardcoded implements ConfigurationInterface
      */
     public function getBoolSafe($path, $default)
     {
-        // TODO: Implement getBoolSafe() method.
+        if (!$this->path($path)->isBool()) {
+            return $default;
+        }
+
+        return $this->path($path)->isTrue();
     }
 
     /**
@@ -121,7 +125,7 @@ class Hardcoded implements ConfigurationInterface
      */
     public function getStringSafe($path, $default)
     {
-        // TODO: Implement getStringSafe() method.
+        return $this->path($path)->getString($default);
     }
 
     /**
@@ -133,7 +137,7 @@ class Hardcoded implements ConfigurationInterface
      */
     public function getIntegerSafe($path, $default)
     {
-        // TODO: Implement getIntegerSafe() method.
+        return $this->path($path)->getInt($default);
     }
 
     /**
@@ -145,20 +149,36 @@ class Hardcoded implements ConfigurationInterface
      */
     public function getFloatSafe($path, $default)
     {
-        // TODO: Implement getFloatSafe() method.
+        return $this->path($path)->getFloat($default);
     }
+
+    /**
+     * Returns flat representations of config
+     *
+     * @return array
+     */
+    public function getFlatList()
+    {
+        $answer = $this->flatten();
+        if ($answer === null) {
+            return array();
+        }
+
+        return $answer;
+    }
+
 
     /**
      * Injects own values into provided config if they are not set
      *
-     * @param ConfigurationInterface $config
+     * @param ConfigurationInterface $defaults
      * @return void
      */
-    public function injectDefaultsInto(ConfigurationInterface $config)
+    public function deepInjectDefaults(ConfigurationInterface $defaults)
     {
-        foreach ($this->_container as $path => $value) {
-            if (!$config->has($path)) {
-                $config->set($path, $value);
+        foreach ($defaults->getFlatList() as $path => $value) {
+            if (!$this->has($path)) {
+                $this->set($path, $value);
             }
         }
     }

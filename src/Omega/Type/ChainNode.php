@@ -52,6 +52,43 @@ class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
         $this->offsetSet($name, $value);
     }
 
+    /**
+     * Sets the value of chain node
+     *
+     * @param mixed $value
+     */
+    public function set($value)
+    {
+        $this->_data = $value;
+    }
+
+    /**
+     * Returns flat representation
+     *
+     * @param string $prefix
+     * @return mixed|null
+     */
+    public function flatten($prefix = '')
+    {
+        if (!$this->isTraversable()) {
+            return $this->_data;
+        }
+
+        $answer = array();
+        foreach ($this as $key => $value) {
+            if ($value instanceof ChainNode) {
+                $answer = array_merge(
+                    $answer,
+                    $value->flatten($prefix . $key . '.')
+                );
+            } else {
+                $answer[$prefix . $key] = $value;
+            }
+
+        }
+
+        return $answer;
+    }
 
     /**
      * {@inheritdoc}
@@ -86,6 +123,27 @@ class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
         }
 
         return (int) $this->_data;
+    }
+
+    /**
+     * Returns float value
+     * If not applicable, then returns $default, but if
+     * default not set, throws exception
+     *
+     * @param mixed|null $default
+     * @return float
+     * @throws \LogicException
+     */
+    public function getFloat($default = null)
+    {
+        if (!$this->isFloat()) {
+            if ($default !== null) {
+                return $default;
+            }
+            throw new \LogicException('Node does not contain float value');
+        }
+
+        return (float) $this->_data;
     }
 
     /**
@@ -201,6 +259,20 @@ class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
     }
 
     /**
+     * Returns true if internal data is float
+     *
+     * @return bool
+     */
+    public function isFloat()
+    {
+        if ($this->isNull() || is_object($this->_data)) {
+            return false;
+        }
+        return is_float($this->_data)
+        || $this->_data === (float) floatval($this->_data);
+    }
+
+    /**
      * Returns true if internal data is null
      *
      * @return bool
@@ -297,7 +369,7 @@ class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
     public function offsetGet($offset)
     {
         if (!$this->isArrayAccess() || !$this->offsetExists($offset)) {
-            return new ChainNode(null);
+            return $this->_data = new ChainNode(null);
         }
         if ($this->_data[$offset] instanceof ChainNode) {
             return $this->_data[$offset];
