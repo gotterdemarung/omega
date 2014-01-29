@@ -52,7 +52,7 @@ class ArrayModel implements ModelInterface, \ArrayAccess
      * @param mixed  $value
      * @return void
      */
-    protected function realSet($key, $value)
+    protected function _realSet($key, $value)
     {
         $this->_data[$key] = $value;
         $this->_changes[$key] = $value;
@@ -64,7 +64,7 @@ class ArrayModel implements ModelInterface, \ArrayAccess
      * @param string $key
      * @return bool
      */
-    protected function realExists($key)
+    protected function _realExists($key)
     {
         return isset($this->_data[$key])
             || array_key_exists($key, $this->_data);
@@ -77,9 +77,9 @@ class ArrayModel implements ModelInterface, \ArrayAccess
      * @throws \Exception
      * @return mixed
      */
-    protected function realGet($key)
+    protected function _realGet($key)
     {
-        if (!$this->realExists($key)) {
+        if (!$this->_realExists($key)) {
             throw new \Exception("Key $key not found");
         }
         return $this->_data[$key];
@@ -120,7 +120,7 @@ class ArrayModel implements ModelInterface, \ArrayAccess
      */
     public function offsetExists($offset)
     {
-        return $this->realExists($offset);
+        return $this->_realExists($offset);
     }
 
     /**
@@ -128,7 +128,7 @@ class ArrayModel implements ModelInterface, \ArrayAccess
      */
     public function offsetGet($offset)
     {
-        return $this->realGet($offset);
+        return $this->_realGet($offset);
     }
 
     /**
@@ -136,7 +136,7 @@ class ArrayModel implements ModelInterface, \ArrayAccess
      */
     public function offsetSet($offset, $value)
     {
-        $this->realSet($offset, $value);
+        $this->_realSet($offset, $value);
     }
 
     /**
