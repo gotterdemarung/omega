@@ -10,8 +10,9 @@ use Omega\Core\RunnableInterface;
 use Omega\DI\ServiceLocatorInterface;
 use Omega\DI\ServiceLocators\Common as CommonServiceLocator;
 use Omega\Events\ChannelInterface;
-use Omega\Events\DebugStringEvent;
+use Omega\Events\StringDebugEvent;
 use Omega\Events\EventInterface;
+use Omega\Events\StringKeyIncrementEvent;
 
 /**
  * Main application abstraction
@@ -48,7 +49,10 @@ abstract class Application implements RunnableInterface, ChannelInterface
         $this->setUpEnvironment();
 
         $this->sendEvent(
-            new DebugStringEvent($this, 'Application constructed')
+            new StringDebugEvent($this, 'Application constructed')
+        );
+        $this->sendEvent(
+            new StringKeyIncrementEvent($this, 'AppConstruct')
         );
     }
 

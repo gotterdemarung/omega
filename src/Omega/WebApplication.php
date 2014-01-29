@@ -4,7 +4,8 @@ namespace Omega;
 
 use Omega\Config\ConfigurationInterface;
 use Omega\DI\HTTPRequestDI;
-use Omega\Events\DebugStringEvent;
+use Omega\Events\StringDebugEvent;
+use Omega\Events\StringKeyIncrementEvent;
 use Omega\Routing\CommonRouter;
 use Omega\Routing\RouteInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,7 +29,7 @@ class WebApplication extends Application
         $this->setRequest(Request::createFromGlobals());
 
         $this->sendEvent(
-            new DebugStringEvent($this, 'Web application constructed')
+            new StringDebugEvent($this, 'Web application constructed')
         );
     }
 
@@ -79,6 +80,10 @@ class WebApplication extends Application
      */
     public function run()
     {
+        $this->sendEvent(
+            new StringKeyIncrementEvent($this, 'AppStart')
+        );
+
         /** @var RouteInterface $router */
         $router = $this->getServiceLocator()->getService(
             'Omega\Routing\RouterInterface'

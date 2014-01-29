@@ -3,7 +3,7 @@
 namespace Omega\Events;
 
 
-class DebugStringEvent extends AbstractEvent
+class StringDebugEvent extends AbstractEvent
 {
 
     private $_message;
