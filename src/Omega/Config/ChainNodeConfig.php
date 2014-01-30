@@ -26,7 +26,7 @@ class ChainNodeConfig extends ChainNodeType implements ConfigurationInterface
      */
     public function has($path)
     {
-        return $this->path($path)->isNull();
+        return !$this->path($path)->isNull();
     }
 
 
