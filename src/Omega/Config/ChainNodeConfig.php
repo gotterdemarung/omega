@@ -2,20 +2,24 @@
 
 namespace Omega\Config;
 
-use Omega\Type\ChainNode as ChainNodeType;
+use Omega\Type\ChainNode;
 
 /**
  * Class Hardcoded
  * Hardcoded implementation of configuration
  *
  * @package Omega\Config
- * @todo tests
  */
-class ChainNodeConfig extends ChainNodeType implements ConfigurationInterface
+class ChainNodeConfig implements ConfigurationInterface
 {
+    /**
+     * @var ChainNode
+     */
+    private $_node;
+
     public function __construct($data)
     {
-        parent::__construct($data);
+        $this->_node = new ChainNode($data);
     }
 
     /**
@@ -26,7 +30,7 @@ class ChainNodeConfig extends ChainNodeType implements ConfigurationInterface
      */
     public function has($path)
     {
-        return !$this->path($path)->isNull();
+        return !$this->_node->path($path)->isNull();
     }
 
 
@@ -39,7 +43,7 @@ class ChainNodeConfig extends ChainNodeType implements ConfigurationInterface
      */
     public function set($path, $value)
     {
-        $this->path($path)->set($value);
+        $this->_node->path($path)->set($value);
     }
 
     /**
@@ -51,7 +55,7 @@ class ChainNodeConfig extends ChainNodeType implements ConfigurationInterface
      */
     public function getBool($path)
     {
-        return $this->path($path)->isTrue();
+        return $this->_node->path($path)->isTrue();
     }
 
     /**
@@ -62,7 +66,7 @@ class ChainNodeConfig extends ChainNodeType implements ConfigurationInterface
      */
     public function getString($path)
     {
-        return $this->path($path)->getString();
+        return $this->_node->path($path)->getString();
     }
 
     /**
@@ -74,7 +78,7 @@ class ChainNodeConfig extends ChainNodeType implements ConfigurationInterface
      */
     public function getInteger($path)
     {
-        return $this->path($path)->getInt();
+        return $this->_node->path($path)->getInt();
     }
 
     /**
@@ -86,7 +90,7 @@ class ChainNodeConfig extends ChainNodeType implements ConfigurationInterface
      */
     public function getFloat($path)
     {
-        return $this->path($path)->getFloat();
+        return $this->_node->path($path)->getFloat();
     }
 
     /**
@@ -97,7 +101,7 @@ class ChainNodeConfig extends ChainNodeType implements ConfigurationInterface
      */
     public function getArray($path)
     {
-        return $this->path($path);
+        return $this->_node->path($path);
     }
 
     /**
@@ -109,11 +113,11 @@ class ChainNodeConfig extends ChainNodeType implements ConfigurationInterface
      */
     public function getBoolSafe($path, $default)
     {
-        if (!$this->path($path)->isBool()) {
+        if (!$this->_node->path($path)->isBool()) {
             return $default;
         }
 
-        return $this->path($path)->isTrue();
+        return $this->_node->path($path)->isTrue();
     }
 
     /**
@@ -125,7 +129,7 @@ class ChainNodeConfig extends ChainNodeType implements ConfigurationInterface
      */
     public function getStringSafe($path, $default)
     {
-        return $this->path($path)->getString($default);
+        return $this->_node->path($path)->getString($default);
     }
 
     /**
@@ -137,7 +141,7 @@ class ChainNodeConfig extends ChainNodeType implements ConfigurationInterface
      */
     public function getIntegerSafe($path, $default)
     {
-        return $this->path($path)->getInt($default);
+        return $this->_node->path($path)->getInt($default);
     }
 
     /**
@@ -149,7 +153,7 @@ class ChainNodeConfig extends ChainNodeType implements ConfigurationInterface
      */
     public function getFloatSafe($path, $default)
     {
-        return $this->path($path)->getFloat($default);
+        return $this->_node->path($path)->getFloat($default);
     }
 
     /**
@@ -159,7 +163,7 @@ class ChainNodeConfig extends ChainNodeType implements ConfigurationInterface
      */
     public function getFlatList()
     {
-        $answer = $this->flatten();
+        $answer = $this->_node->flatten();
         if ($answer === null) {
             return array();
         }
