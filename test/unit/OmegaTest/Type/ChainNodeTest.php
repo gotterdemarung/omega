@@ -33,11 +33,11 @@ class ChainNodeTest extends Test
         $x = new ChainNode(array());
         $this->assertTrue($x->isEmpty());
         $this->assertFalse($x->isNull());
-        $this->assertTrue($x->isArrayAccess());
+        $this->assertTrue($x->isArray());
         $x = new ChainNode(array(1,2));
         $this->assertFalse($x->isEmpty());
         $this->assertFalse($x->isNull());
-        $this->assertTrue($x->isArrayAccess());
+        $this->assertTrue($x->isArray());
     }
 
     public function testGetInt()
@@ -122,18 +122,16 @@ class ChainNodeTest extends Test
         $this->assertFalse($x->isEmpty());
     }
 
-    public function testIsArrayAccess()
+    public function testIsArray()
     {
         $x = new ChainNode();
-        $this->assertFalse($x->isArrayAccess());
+        $this->assertFalse($x->isArray());
         $x = new ChainNode(4);
-        $this->assertFalse($x->isArrayAccess());
+        $this->assertFalse($x->isArray());
         $x = new ChainNode('as');
-        $this->assertFalse($x->isArrayAccess());
+        $this->assertFalse($x->isArray());
         $x = new ChainNode(array());
-        $this->assertTrue($x->isArrayAccess());
-        $x = new ChainNode(new ChainNode());
-        $this->assertTrue($x->isArrayAccess());
+        $this->assertTrue($x->isArray());
     }
 
     public function testIsBool()
@@ -201,24 +199,6 @@ class ChainNodeTest extends Test
         $this->assertFalse($x->isString());
     }
 
-    public function testIsTraversable()
-    {
-        $x = new ChainNode(array());
-        $this->assertTrue($x->isTraversable());
-
-        $x = new ChainNode(new ChainNode());
-        $this->assertTrue($x->isTraversable());
-
-        $x = new ChainNode();
-        $this->assertFalse($x->isTraversable());
-        $x = new ChainNode(1);
-        $this->assertFalse($x->isTraversable());
-        $x = new ChainNode(true);
-        $this->assertFalse($x->isTraversable());
-        $x = new ChainNode('bar');
-        $this->assertFalse($x->isTraversable());
-    }
-
     public function testIsTrue()
     {
         $x = new ChainNode(1);
@@ -233,20 +213,6 @@ class ChainNodeTest extends Test
         $this->assertFalse($x->isTrue());
         $x = new ChainNode(true);
         $this->assertTrue($x->isTrue());
-    }
-
-    public function testEquals()
-    {
-        $x = new ChainNode(10);
-        $this->assertTrue($x->equals(10));
-        $this->assertFalse($x->equals(9));
-        $this->assertFalse($x->equals('10'));
-        $this->assertTrue($x->equals(new ChainNode(10)));
-
-        $x = new ChainNode('str');
-        $this->assertTrue($x->equals('str'));
-        $this->assertFalse($x->equals('str2'));
-        $this->assertTrue($x->equals(new ChainNode('str')));
     }
 
     public function testArrayAccess()
@@ -291,8 +257,8 @@ class ChainNodeTest extends Test
         ));
 
         $this->assertCount(1, $tree);
-        $this->assertTrue($tree->isTraversable());
-        $this->assertTrue($tree->base->isTraversable());
+        $this->assertTrue($tree->isArray());
+        $this->assertTrue($tree->base->isArray());
         $this->assertSame('bar', $tree->base->foo->getString());
         $this->assertSame(3, $tree->base->child->sub->three->getInt());
         $this->assertSame(4, $tree->path('base.child.sub.four')->getInt());
@@ -300,6 +266,26 @@ class ChainNodeTest extends Test
         $this->assertTrue($tree->path('base.notvalid')->isNull());
     }
 
+    public function testNonExistsAdd()
+    {
+        $x = new ChainNode(array('one' => 1));
 
+        $this->assertTrue($x->has('one'));
+        $this->assertSame(1, $x['one']->getInt());
+
+        $this->assertFalse($x->has('two')); // Transparent creation of second key
+        $this->assertTrue($x->has('one'));
+        $this->assertSame(1, $x['one']->getInt());
+
+        // Going through path
+        $this->assertTrue($x->path('one')->isInt());
+        $this->assertTrue($x->path('foo')->isNull()); // Transparent creation of third key
+        $this->assertTrue($x->path('one')->isInt());
+
+        $x->path('two.child.subchild')->set('hello');
+        var_dump($x);
+        $this->assertSame('hello', $x['two']['child']['subchild']->getString());
+        $this->assertSame('hello', $x->path('two.child.subchild')->getString());
+    }
 
 }

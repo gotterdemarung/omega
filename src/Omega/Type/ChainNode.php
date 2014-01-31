@@ -16,9 +16,14 @@ namespace Omega\Type;
 class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
 {
     /**
-     * @var mixed
+     * @var int|float|bool|string
      */
-    private $_data;
+    private $_scalar = null;
+
+    /**
+     * @var array
+     */
+    private $_array = null;
 
     /**
      * Constructor
@@ -27,7 +32,9 @@ class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
      */
     public function __construct($data = null)
     {
-        $this->_data = $data;
+        if ($data !== null) {
+            $this->set($data);
+        }
     }
 
     /**
@@ -59,7 +66,20 @@ class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
      */
     public function set($value)
     {
-        $this->_data = $value;
+        if ($value instanceof ChainNode) {
+            $this->_scalar = $value->_scalar;
+            $this->_array = $value->_array;
+        } else if (is_array($value) || $value instanceof \ArrayAccess) {
+            // Using boxing
+            foreach ($value as &$row) {
+                if (!$row instanceof ChainNode) {
+                    $row = new ChainNode($row);
+                }
+            }
+            $this->_array = $value;
+        } else {
+            $this->_scalar = $value;
+        }
     }
 
     /**
@@ -70,8 +90,8 @@ class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
      */
     public function flatten($prefix = '')
     {
-        if (!$this->isTraversable()) {
-            return $this->_data;
+        if ($this->_array === null) {
+            return null;
         }
 
         $answer = array();
@@ -95,13 +115,10 @@ class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
      */
     public function count()
     {
-        if (empty($this->_data)) {
+        if (empty($this->_array)) {
             return 0;
         }
-        if (is_array($this->_data) || ($this->_data instanceof \Countable)) {
-            return count($this->_data);
-        }
-        return 0;
+        return count($this->_array);
     }
 
     /**
@@ -122,7 +139,7 @@ class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
             throw new \LogicException('Node does not contain int value');
         }
 
-        return (int) $this->_data;
+        return (int) $this->_scalar;
     }
 
     /**
@@ -143,7 +160,7 @@ class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
             throw new \LogicException('Node does not contain float value');
         }
 
-        return (float) $this->_data;
+        return (float) $this->_scalar;
     }
 
     /**
@@ -151,18 +168,8 @@ class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
      */
     public function getIterator()
     {
-        // We need to wrap everything before iterating
-        if ($this->isTraversable()) {
-            foreach ($this->_data as $key => $value) {
-                if ($value instanceof ChainNode) {
-                    continue;
-                } else {
-                    $this->_data[$key] = new ChainNode(
-                        $value
-                    );
-                }
-            }
-            return new \ArrayIterator($this->_data);
+        if ($this->isArray()) {
+            return new \ArrayIterator($this->_array);
         } else {
             return new \EmptyIterator();
         }
@@ -182,7 +189,7 @@ class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
      */
     public function getString($default = null)
     {
-        if ($this->isEmpty()) {
+        if ($this->_scalar === null) {
             if ($default !== null) {
                 return $default;
             }
@@ -192,7 +199,7 @@ class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
             throw new \LogicException('Node value is not a string');
         }
 
-        return (string) $this->_data;
+        return (string) $this->_scalar;
     }
 
     /**
@@ -205,14 +212,14 @@ class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
      */
     public function castString($default = null)
     {
-        if ($this->isEmpty()) {
+        if ($this->_scalar === null) {
             if ($default !== null) {
                 return (string) $default;
             }
             throw new \LogicException('Node is empty and not contain string');
         }
 
-        return (string) $this->_data;
+        return (string) $this->_scalar;
     }
 
     /**
@@ -220,7 +227,7 @@ class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
      */
     public function isEmpty()
     {
-        return empty($this->_data);
+        return empty($this->_array) && empty($this->_scalar);
     }
 
     /**
@@ -229,9 +236,9 @@ class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
      *
      * @return bool
      */
-    public function isArrayAccess()
+    public function isArray()
     {
-        return is_array($this->_data) || ($this->_data instanceof \ArrayAccess);
+        return $this->_array !== null;
     }
 
     /**
@@ -241,7 +248,7 @@ class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
      */
     public function isBool()
     {
-        return !$this->isNull() && is_bool($this->_data);
+        return $this->_scalar !== null && is_bool($this->_scalar);
     }
 
     /**
@@ -251,11 +258,10 @@ class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
      */
     public function isInt()
     {
-        if ($this->isNull() || is_object($this->_data)) {
-            return false;
-        }
-        return is_int($this->_data)
-        || $this->_data === (string) intval($this->_data);
+        return $this->_scalar !== null && (
+            is_int($this->_scalar)
+            || $this->_scalar === (string) intval($this->_scalar)
+        );
     }
 
     /**
@@ -265,11 +271,10 @@ class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
      */
     public function isFloat()
     {
-        if ($this->isNull() || is_object($this->_data)) {
-            return false;
-        }
-        return is_float($this->_data)
-        || $this->_data === (float) floatval($this->_data);
+        return $this->_scalar !== null && (
+            is_float($this->_scalar)
+            || $this->_scalar === (float) floatval($this->_scalar)
+        );
     }
 
     /**
@@ -279,7 +284,17 @@ class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
      */
     public function isNull()
     {
-        return $this->_data === null;
+        return $this->_array === null && $this->_scalar === null;
+    }
+
+    /**
+     * Returns true if scalar value is null
+     *
+     * @return bool
+     */
+    public function isScalar()
+    {
+        return $this->_scalar !== null;
     }
 
     /**
@@ -289,24 +304,7 @@ class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
      */
     public function isString()
     {
-        if ($this->isNull() || is_object($this->_data)) {
-            return false;
-        }
-        return is_string($this->_data);
-    }
-
-    /**
-     * Returns true if internal data is traversable
-     *
-     * @return bool
-     */
-    public function isTraversable()
-    {
-        if ($this->isNull()) {
-            return false;
-        }
-
-        return is_array($this->_data) || $this->_data instanceof \Traversable;
+        return $this->_scalar !== null && is_string($this->_scalar);
     }
 
     /**
@@ -316,50 +314,30 @@ class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
      */
     public function isTrue()
     {
-        return $this->isBool() && $this->_data === true;
+        return $this->isBool() && $this->_scalar === true;
     }
 
     /**
-     * Returns true if current object equals to provided
+     * Returns true if provided key exists in set
+     * Alias for @see offsetExists
      *
-     * @param mixed $object
+     * @param string $key
      * @return bool
      */
-    public function equals($object)
+    public function has($key)
     {
-        if ($object instanceof ChainNode) {
-            return $this->_data === $object->_data;
-        }
-
-        if ($object === null) {
-            return $this->isNull();
-        }
-        if (is_bool($object) && $this->isBool()) {
-            return $this->_data === $object;
-        }
-        if (is_int($object) && $this->isInt()) {
-            return $this->_data === $object;
-        }
-        if (is_float($object) && is_float($this->_data)) {
-            return $this->_data === $object;
-        }
-        if (is_string($object) && $this->isString()) {
-            return $this->_data === $object;
-        }
-
-        return false;
+        return $this->offsetExists($key);
     }
-
 
     /**
      * {@inheritdoc}
      */
     public function offsetExists($offset)
     {
-        if (!$this->isArrayAccess()) {
+        if (!$this->isArray()) {
             return false;
         }
-        return isset($this->_data[$offset]);
+        return isset($this->_array[$offset]);
     }
 
     /**
@@ -368,17 +346,25 @@ class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
      */
     public function offsetGet($offset)
     {
-        if (!$this->isArrayAccess() || !$this->offsetExists($offset)) {
-            return $this->_data = new ChainNode(null);
+        if ($this->offsetExists($offset)) {
+            // Offset exists
+            if (!$this->_array[$offset] instanceof ChainNode) {
+                // Autoboxing
+                $this->_array[$offset] = new ChainNode($this->_array[$offset]);
+            }
+            return $this->_array[$offset];
         }
-        if ($this->_data[$offset] instanceof ChainNode) {
-            return $this->_data[$offset];
-        } else {
-            // Wrapping
-            return $this->_data[$offset] = new ChainNode(
-                $this->_data[$offset]
+        if (!$this->isNull() && $this->isArray()) {
+            // Node is not an array and not null
+            throw new \BadMethodCallException(
+                'Node is not array and contains value'
             );
         }
+        if ($this->isNull()) {
+            // Creating array container
+            $this->_array = array();
+        }
+        return $this->_array[$offset] = new ChainNode(null);
     }
 
     /**
@@ -388,14 +374,14 @@ class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
     public function offsetSet($offset, $value)
     {
         if ($this->isNull()) {
-            $this->_data = array();
-        } else if (! $this->isArrayAccess()) {
+            $this->_array = array();
+        } else if (!$this->isArray()) {
             throw new \BadMethodCallException(
-                'Node is not array node'
+                'Node is not array node for key ' . $offset
             );
         }
 
-        $this->_data[$offset] = $value;
+        $this->_array[$offset] = $value;
     }
 
     /**
@@ -403,8 +389,8 @@ class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
      */
     public function offsetUnset($offset)
     {
-        if ($this->isArrayAccess()) {
-            unset($this->_data[$offset]);
+        if ($this->isArray()) {
+            unset($this->_array[$offset]);
         }
     }
 

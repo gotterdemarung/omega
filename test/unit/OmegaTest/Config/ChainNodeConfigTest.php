@@ -16,8 +16,6 @@ class ChainNodeConfigTest extends Test {
             'four' => true
         ));
 
-        var_dump($linear, $linear->has('one'), $linear->has('five'), $linear->has('one'));
-
         $this->assertTrue($linear->has('one'));
         $this->assertTrue($linear->has('two'));
         $this->assertTrue($linear->has('three'));
