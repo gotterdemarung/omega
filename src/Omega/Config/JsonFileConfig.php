@@ -34,7 +34,7 @@ class JsonFileConfig extends ChainNodeConfig
             );
         }
 
-        parent::__construct($data);
+        parent::__construct($json);
     }
 
 

@@ -21,6 +21,11 @@ class ChainNodeConfig implements ConfigurationInterface
     {
         $this->_node = new ChainNode(array());
         if (!empty($data)) {
+            if (!is_array($data) && !$data instanceof \Traversable) {
+                throw new \InvalidArgumentException(
+                    'Expecting data to be valid array or Traversable'
+                );
+            }
             foreach ($data as $key => $value) {
                 $this->_node->path($key)->set($value);
             }
