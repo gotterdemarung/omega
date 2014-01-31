@@ -283,9 +283,14 @@ class ChainNodeTest extends Test
         $this->assertTrue($x->path('one')->isInt());
 
         $x->path('two.child.subchild')->set('hello');
-        var_dump($x);
         $this->assertSame('hello', $x['two']['child']['subchild']->getString());
         $this->assertSame('hello', $x->path('two.child.subchild')->getString());
+    }
+
+    public function testNonExistantTrue()
+    {
+        $x = new ChainNode(array('one' => 1));
+        $this->assertFalse($x->path('two')->isTrue());
     }
 
 }

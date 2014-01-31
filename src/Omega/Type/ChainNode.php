@@ -91,7 +91,7 @@ class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
     public function flatten($prefix = '')
     {
         if ($this->_array === null) {
-            return null;
+            return array();
         }
 
         $answer = array();
@@ -354,14 +354,7 @@ class ChainNode implements \IteratorAggregate, \ArrayAccess, \Countable
             }
             return $this->_array[$offset];
         }
-        if (!$this->isNull() && $this->isArray()) {
-            // Node is not an array and not null
-            throw new \BadMethodCallException(
-                'Node is not array and contains value'
-            );
-        }
-        if ($this->isNull()) {
-            // Creating array container
+        if (!$this->isArray()) {
             $this->_array = array();
         }
         return $this->_array[$offset] = new ChainNode(null);
