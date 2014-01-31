@@ -5,7 +5,7 @@ namespace Omega\Config;
 use Omega\Type\ChainNode;
 
 /**
- * Class Hardcoded
+ * Class ChainNodeConfig
  * Hardcoded implementation of configuration
  *
  * @package Omega\Config
@@ -19,7 +19,12 @@ class ChainNodeConfig implements ConfigurationInterface
 
     public function __construct($data)
     {
-        $this->_node = new ChainNode($data);
+        $this->_node = new ChainNode(array());
+        if (!empty($data)) {
+            foreach ($data as $key => $value) {
+                $this->_node->path($key)->set($value);
+            }
+        }
     }
 
     /**
@@ -31,19 +36,6 @@ class ChainNodeConfig implements ConfigurationInterface
     public function has($path)
     {
         return !$this->_node->path($path)->isNull();
-    }
-
-
-    /**
-     * Sets configuration value
-     *
-     * @param string $path
-     * @param mixed $value
-     * @return void
-     */
-    public function set($path, $value)
-    {
-        $this->_node->path($path)->set($value);
     }
 
     /**
@@ -170,22 +162,4 @@ class ChainNodeConfig implements ConfigurationInterface
 
         return $answer;
     }
-
-
-    /**
-     * Injects own values into provided config if they are not set
-     *
-     * @param ConfigurationInterface $defaults
-     * @return void
-     */
-    public function deepInjectDefaults(ConfigurationInterface $defaults)
-    {
-        foreach ($defaults->getFlatList() as $path => $value) {
-            if (!$this->has($path)) {
-                $this->set($path, $value);
-            }
-        }
-    }
-
-
 }

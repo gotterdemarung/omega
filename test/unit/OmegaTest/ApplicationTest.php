@@ -3,13 +3,16 @@
 namespace OmegaTest;
 
 use Omega\Application;
+use Omega\Config\ChainNodeConfig;
 
 class ApplicationTest extends Test
 {
 
-    public function testConstructor()
+    public function testConfigurator()
     {
-        $this->fail('todo');
+        $x = new ApplicationTestTarget(
+            new ChainNodeConfig(null)
+        );
     }
 
 }

@@ -3,6 +3,7 @@
 namespace Omega;
 
 
+use Omega\Config\Combined;
 use Omega\Config\ConfigurationException;
 use Omega\Config\ConfigurationInterface;
 use Omega\Config\Defaults;
@@ -37,13 +38,16 @@ abstract class Application implements RunnableInterface, ChannelInterface
         ServiceLocatorInterface $sli = null
     )
     {
-        $this->_configuration = clone $configuration;
+        $this->_configuration = new Combined(
+            $configuration,
+            Defaults::getInstance()
+        );
+
         if ($sli === null) {
             $this->_serviceLocator = new CommonServiceLocator();
         } else {
             $this->_serviceLocator = $sli;
         }
-        $this->_configuration->deepInjectDefaults(Defaults::getInstance());
         $this->setUpServiceLocator();
         $this->setUpEventsChannel();
         $this->setUpEnvironment();

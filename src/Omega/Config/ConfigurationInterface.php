@@ -14,15 +14,6 @@ interface ConfigurationInterface
     const PATH_APP_IMPLEMENTATIONS  = 'application.services';
 
     /**
-     * Sets configuration value
-     *
-     * @param string $path
-     * @param mixed  $value
-     * @return void
-     */
-    public function set($path, $value);
-
-    /**
      * Returns true if current configuration has provided path
      *
      * @param string $path
@@ -115,12 +106,4 @@ interface ConfigurationInterface
      * @return array
      */
     public function getFlatList();
-
-    /**
-     * Injects own values into provided config if they are not set
-     *
-     * @param ConfigurationInterface $defaults
-     * @return void
-     */
-    public function deepInjectDefaults(ConfigurationInterface $defaults);
 }
