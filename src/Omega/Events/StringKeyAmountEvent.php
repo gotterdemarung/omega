@@ -8,12 +8,12 @@ class StringKeyAmountEvent extends AbstractEvent
     /**
      * @var string
      */
-    protected $key;
+    protected $_key;
 
     /**
      * @var int|float
      */
-    protected $amount;
+    protected $_amount;
 
     /**
      * Creates new count event
@@ -31,12 +31,17 @@ class StringKeyAmountEvent extends AbstractEvent
         if ($key === null) {
             throw new \InvalidArgumentException('Key is null');
         }
-        if ($increment === null || (!is_int($increment) && !is_float($increment))) {
-            throw new \InvalidArgumentException('Amount not valid. Received ' . $increment);
+        if ($increment === null
+            || (!is_int($increment)
+            && !is_float($increment))
+        ) {
+            throw new \InvalidArgumentException(
+                'Amount not valid. Received ' . $increment
+            );
         }
 
-        $this->key = '' . $key;
-        $this->amount = $increment;
+        $this->_key = '' . $key;
+        $this->_amount = $increment;
     }
 
     /**
@@ -46,7 +51,7 @@ class StringKeyAmountEvent extends AbstractEvent
      */
     public function getAmount()
     {
-        return $this->amount;
+        return $this->_amount;
     }
 
     /**
@@ -56,7 +61,7 @@ class StringKeyAmountEvent extends AbstractEvent
      */
     public function getKey()
     {
-        return $this->key;
+        return $this->_key;
     }
 
 

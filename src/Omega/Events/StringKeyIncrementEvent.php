@@ -8,12 +8,12 @@ class StringKeyIncrementEvent extends AbstractEvent
     /**
      * @var string
      */
-    protected $key;
+    protected $_key;
 
     /**
      * @var int|float
      */
-    protected $increment;
+    protected $_increment;
 
     /**
      * Creates new increment event
@@ -32,11 +32,13 @@ class StringKeyIncrementEvent extends AbstractEvent
             throw new \InvalidArgumentException('Key is null');
         }
         if ($increment === null || !is_int($increment)) {
-            throw new \InvalidArgumentException('Increment not valid. Received ' . $increment);
+            throw new \InvalidArgumentException(
+                'Increment not valid. Received ' . $increment
+            );
         }
 
-        $this->key = '' . $key;
-        $this->increment = $increment;
+        $this->_key = '' . $key;
+        $this->_increment = $increment;
     }
 
     /**
@@ -46,7 +48,7 @@ class StringKeyIncrementEvent extends AbstractEvent
      */
     public function getIncrement()
     {
-        return $this->increment;
+        return $this->_increment;
     }
 
     /**
@@ -56,6 +58,6 @@ class StringKeyIncrementEvent extends AbstractEvent
      */
     public function getKey()
     {
-        return $this->key;
+        return $this->_key;
     }
 }

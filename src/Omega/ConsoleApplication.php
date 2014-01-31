@@ -17,7 +17,7 @@ class ConsoleApplication extends Application
     /**
      * @var \Symfony\Component\Console\Application
      */
-    protected $symfonyApp;
+    protected $_symfonyApp;
 
     /**
      * @param ConfigurationInterface  $config  Configuration instance
@@ -33,7 +33,7 @@ class ConsoleApplication extends Application
     )
     {
         parent::__construct($config, $sli);
-        $this->symfonyApp = new SymfonyConsoleApp($name, $version);
+        $this->_symfonyApp = new SymfonyConsoleApp($name, $version);
     }
 
     /**
@@ -43,7 +43,7 @@ class ConsoleApplication extends Application
      */
     public function addCommand(Command $cmd)
     {
-        $this->symfonyApp->add($cmd);
+        $this->_symfonyApp->add($cmd);
     }
 
 
@@ -55,7 +55,7 @@ class ConsoleApplication extends Application
      */
     public function run()
     {
-        $this->symfonyApp->run();
+        $this->_symfonyApp->run();
     }
 
 } 
