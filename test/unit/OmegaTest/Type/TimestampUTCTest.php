@@ -8,6 +8,11 @@ use OmegaTest\Test;
 class TimestampUTCTest extends Test
 {
 
+    protected function setUp()
+    {
+        date_default_timezone_set('Europe/Kiev');
+    }
+
     protected function assertConstruct($expect, $argument, $precision = null)
     {
         $x = new TimestampUTC($argument, $precision);

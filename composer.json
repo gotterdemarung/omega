@@ -12,12 +12,14 @@
     ],
     "require": {
         "php": ">=5.3",
-        "symfony/http-foundation": "2.4.0"
+        "symfony/http-foundation": "2.4.0",
+        "symfony/dependency-injection": "2.3.*@dev"
     },
     "require-dev": {
+        "pdepend/pdepend" : "1.1.1",
         "phpunit/phpunit": "3.7.28",
-        "squizlabs/php_codesniffer": "dev-phpcs-fixer",
-        "phpmd/phpmd": "dev-master",
+        "squizlabs/php_codesniffer": "1.5.1",
+        "phpmd/phpmd": "1.5.0",
         "kherge/box": "~2.0"
     },
     "autoload": {
