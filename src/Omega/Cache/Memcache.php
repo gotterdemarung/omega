@@ -6,7 +6,6 @@ namespace Omega\Cache;
  * Class Memcache
  *
  * @package Omega\Cache
- * @todo tests
  */
 class Memcache implements CacheInterface
 {
@@ -105,6 +104,7 @@ class Memcache implements CacheInterface
     /**
      * Returns object, stored in cache, or null
      *
+     * @param mixed $offset
      * @return mixed|null
      */
     public function offsetGet($offset)
