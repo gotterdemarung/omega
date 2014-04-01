@@ -2,12 +2,11 @@
 
 namespace OmegaTest\Type;
 
-use Omega\Type\TimestampUTC;
+use Omega\DateTime\Instant;
 use OmegaTest\Test;
 
-class TimestampUTCTest extends Test
+class InstantTest extends Test
 {
-
     protected function setUp()
     {
         date_default_timezone_set('Europe/Kiev');
@@ -15,7 +14,7 @@ class TimestampUTCTest extends Test
 
     protected function assertConstruct($expect, $argument, $precision = null)
     {
-        $x = new TimestampUTC($argument, $precision);
+        $x = new Instant($argument, $precision);
         $this->assertSame($expect, $x->getFloat());
     }
 
@@ -43,130 +42,105 @@ class TimestampUTCTest extends Test
         $this->assertConstruct((float) 1382227200, new \DateTime('2013-10-20', new \DateTimeZone('UTC')));
 
         // Self
-        $this->assertConstruct(12.34, new TimestampUTC(12.34));
+        $this->assertConstruct(12.34, new Instant(12.34));
 
         // String to time
-        $this->assertConstruct((float)944172704, '1999-12-02 22:11:44');
-
-        // Precision
-        $this->assertConstruct(12.346, 12.3456, 3); // rounding
-        $this->assertConstruct(12.3, 12.3456, 1);
-        $this->assertConstruct((float) 12, 12.345, 0);
-        try {
-            $this->assertConstruct((float) 12, 12.345, -2);
-            $this->fail();
-        } catch (\InvalidArgumentException $e) {
-            $this->assertTrue(true);
-        }
+        $this->assertConstruct((float) 944165504, '1999-12-02 22:11:44');
     }
 
     public function testEquals()
     {
-        $x = new TimestampUTC(12.344, 2); // precision !!!
+        $x = new Instant(12.34);
         $this->assertTrue($x->equals(12.34));
-        $this->assertTrue($x->equals(new TimestampUTC('12.34')));
+        $this->assertTrue($x->equals(new Instant('12.34')));
         $this->assertFalse($x->equals(12.3456));
         $this->assertFalse($x->equals(12));
     }
 
     public function testFormat()
     {
-        $x = new TimestampUTC(123456789.76, 2);
-        $this->assertSame('1973-11-29 21:33:09', $x->format('Y-m-d H:i:s'));
-        $this->assertSame('29.11.73', $x->format('d.m.y'));
+        $x = new Instant(123456789.76, 2);
+        $this->assertSame('1973-11-30 00:33:09', $x->format('Y-m-d H:i:s'));
+        $this->assertSame('30.11.73', $x->format('d.m.y'));
     }
 
     public function testDayBegin()
     {
-        $x = new TimestampUTC(123456789.76, 2);
-        $this->assertSame(123379200, $x->getDayBegin()->getInt());
+        $x = new Instant(123456789.76, 2);
+        $this->assertSame(123454800, $x->getDayBegin()->getTimestamp());
     }
 
     public function testDayEnd()
     {
-        $x = new TimestampUTC(123456789.76, 2);
-        $this->assertSame(123465599, $x->getDayEnd()->getInt());
+        $x = new Instant(123456789.76, 2);
+        $this->assertSame(123541199, $x->getDayEnd()->getTimestamp());
     }
 
     public function testGetFloat()
     {
-        $x = new TimestampUTC(123456789.76, 2);
+        $x = new Instant(123456789.76, 2);
         $this->assertSame(123456789.76, $x->getFloat());
     }
 
     public function testGetInt()
     {
-        $x = new TimestampUTC(123456789.76, 2);
-        $this->assertSame(123456789, $x->getInt());
+        $x = new Instant(123456789.76, 2);
+        $this->assertSame(123456789, $x->getTimestamp());
     }
 
     public function testGetMySQLDate()
     {
-        $x = new TimestampUTC(123456789.76, 2);
-        $this->assertSame('1973-11-29', $x->getMySQLDate());
+        $x = new Instant(123456789.76, 2);
+        $this->assertSame('1973-11-30', $x->getMySQLDate());
     }
 
     public function testGetMySQLDateTime()
     {
-        $x = new TimestampUTC(123456789.76, 2);
-        $this->assertSame('1973-11-29 21:33:09', $x->getMySQLDateTime());
+        $x = new Instant(123456789.76, 2);
+        $this->assertSame('1973-11-30 00:33:09', $x->getMySQLDateTime());
     }
 
     public function testGetUnixTimestamp()
     {
-        $x = new TimestampUTC(123456789.76, 2);
-        $this->assertSame(123456789, $x->getUnixTimestamp());
-    }
-
-    public function testGetString()
-    {
-        $x = new TimestampUTC(12.76345);
-        $this->assertSame('12.8', $x->getString(1));
-        $this->assertSame('12.763450', $x->getString());
-        $this->assertSame('12.763450000', $x->getString(9));
+        $x = new Instant(123456789.76, 2);
+        $this->assertSame(123456789, $x->getTimestamp());
     }
 
     public function testBiggerThan()
     {
-        $x = new TimestampUTC(12.76345);
+        $x = new Instant(12.76345);
         $this->assertTrue($x->isBiggerThen(10));
         $this->assertFalse($x->isBiggerThen(13));
     }
 
     public function testLesserThan()
     {
-        $x = new TimestampUTC(12.76345);
+        $x = new Instant(12.76345);
         $this->assertTrue($x->isLesserThen(20));
         $this->assertFalse($x->isLesserThen(10));
-    }
-
-    public function testToJSON()
-    {
-        $x = new TimestampUTC(12.76345);
-        $this->assertSame('12.763450', $x->toJSON());
     }
 
     public function testStaticNow()
     {
         $start = microtime(true);
-        $x = TimestampUTC::now()->getFloat();
+        $x = Instant::now()->getFloat();
         $this->assertGreaterThanOrEqual($start, $x);
         $this->assertLessThanOrEqual(microtime(true), $x);
     }
 
     public function testStaticValid()
     {
-        $this->assertTrue(TimestampUTC::isValidStringTimeStamp('12345'));
-        $this->assertTrue(TimestampUTC::isValidStringTimeStamp('12345.33'));
-        $this->assertTrue(TimestampUTC::isValidStringTimeStamp('-12345'));
+        $this->assertTrue(Instant::isValidStringTimeStamp('12345'));
+        $this->assertTrue(Instant::isValidStringTimeStamp('12345.33'));
+        $this->assertTrue(Instant::isValidStringTimeStamp('-12345'));
 
-        $this->assertFalse(TimestampUTC::isValidStringTimeStamp('12345,33'));
-        $this->assertFalse(TimestampUTC::isValidStringTimeStamp(PHP_INT_MAX . '1'));
+        $this->assertFalse(Instant::isValidStringTimeStamp('12345,33'));
+        $this->assertFalse(Instant::isValidStringTimeStamp(PHP_INT_MAX . '1'));
     }
 
     public function testStaticMkTime()
     {
-        $this->assertSame(1146711721, TimestampUTC::mkTime(3, 2, 1, 5, 4, 6)->getInt());
+        $this->assertSame(1146711721, Instant::create(3, 2, 1, 5, 4, 6)->getTimestamp());
     }
 
 }
