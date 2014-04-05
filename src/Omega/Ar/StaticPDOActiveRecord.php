@@ -116,10 +116,8 @@ abstract class StaticPDOActiveRecord implements \ArrayAccess
 
         $stmt->execute();
         $pool = array();
-        if ($stmt->rowCount() > 0) {
-            while ($row = $stmt->fetch(\PDO::FETCH_ASSOC, \PDO::FETCH_ORI_NEXT)) {
-                $pool[] = new static($row);
-            }
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            $pool[] = new static($row);
         }
 
         return $pool;
@@ -136,7 +134,7 @@ abstract class StaticPDOActiveRecord implements \ArrayAccess
         $sql = 'SELECT * FROM :: WHERE 1 ';
         $params = array();
         foreach ($attributes as $key => $value) {
-            $sql .= "`{$key}` = :{$key}";
+            $sql .= " AND `{$key}` = :{$key}";
             $params[':' . $key] = $value;
         }
 
@@ -155,7 +153,7 @@ abstract class StaticPDOActiveRecord implements \ArrayAccess
             'SELECT * FROM :: WHERE `'
             . static::PRIMARY_KEY
             . '` = :id LIMIT 1',
-            array(':id', $id)
+            array(':id' => $id)
         );
         if (count($results) != 1) {
             return null;
@@ -259,7 +257,7 @@ abstract class StaticPDOActiveRecord implements \ArrayAccess
      */
     public function isNewRecord()
     {
-        return isset($this->_data[static::PRIMARY_KEY]);
+        return !isset($this->_data[static::PRIMARY_KEY]);
     }
 
     /**
