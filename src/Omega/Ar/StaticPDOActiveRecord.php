@@ -38,6 +38,13 @@ abstract class StaticPDOActiveRecord implements \ArrayAccess
     private $_data = array();
 
     /**
+     * Active record changes
+     *
+     * @var array
+     */
+    private $_changes = array();
+
+    /**
      * Set main PDO connection
      *
      * @param \PDO $pdo
@@ -247,6 +254,21 @@ abstract class StaticPDOActiveRecord implements \ArrayAccess
         return new Instant($this[$offset]);
     }
 
+    /**
+     * @return bool
+     */
+    public function isNewRecord()
+    {
+        return isset($this->_data[static::PRIMARY_KEY]);
+    }
+
+    /**
+     * @return string
+     */
+    public function getCollection()
+    {
+        return static::TABLE;
+    }
 
     /**
      * Returns ID of entry
@@ -296,7 +318,8 @@ abstract class StaticPDOActiveRecord implements \ArrayAccess
      */
     public function offsetSet($offset, $value)
     {
-        $this->_data[$offset] = $value;
+        $this->_changes[$offset] = $value;
+        $this->_data[$offset]    = $value;
     }
 
     /**
@@ -307,8 +330,57 @@ abstract class StaticPDOActiveRecord implements \ArrayAccess
      */
     public function offsetUnset($offset)
     {
+        unset($this->_changes[$offset]);
         unset($this->_data[$offset]);
     }
+
+    /**
+     * Saves changes for active record
+     *
+     * @return void
+     */
+    public function save()
+    {
+        if (count($this->_changes) !== 0) {
+            if ($this->isNewRecord()) {
+                // Inserting
+                $table  = $this->getCollection();
+                $keys   = implode(', ', array_map(function($x) {return "`$x`";}, array_keys($this->_changes)));
+                $values = array_values($this->_changes);
+                $ph     = implode(', ', array_fill(0, count($values), '?'));
+                $stmt = $this->getPdoConnection($table)->prepare(
+                    "INSERT INTO {$table} ($keys) VALUES ({$ph})"
+                );
+                $stmt->execute($values);
+                $this[self::PRIMARY_KEY] = $this->getPdoConnection($table)->lastInsertId();
+            } else {
+                // UPDATING
+                $table  = $this->getCollection();
+                $keys   = array_map(function($x) {return "`$x`";}, array_keys($this->_changes));
+                $values = array_values($this->_changes);
+                $ph     = array_map(function($x){return ':' . $x;}, $keys);
+                $total  = array();
+                // JOINING
+                for ($i = 0; $i < count($keys); $i++) {
+                    $total[] = $keys[$i] . ' = ' . $ph[$i];
+                }
+                $total  = implode(', ', $total);
+                $pk     = self::PRIMARY_KEY;
+                $stmt = $this->getPdoConnection($table)->prepare(
+                    "UPDATE {$table} SET {$total} WHERE `{$pk}` = :{$pk} LIMIT 1"
+                );
+                $replacements = array_combine($ph, $values);
+                $replacements[$pk] = $this->getId();
+                foreach ($replacements as $k => $v) {
+                    $stmt->bindValue($k, $v);
+                }
+                $stmt->execute();
+            }
+        }
+
+        $this->_changes = array();
+    }
+
 
     /**
      * Returns true if current object has same class, as $another,
