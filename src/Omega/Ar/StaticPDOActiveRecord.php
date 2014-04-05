@@ -231,7 +231,7 @@ abstract class StaticPDOActiveRecord implements \ArrayAccess
      * @param string $offset
      * @return float
      */
-    protected function _getString($offset)
+    protected function _getFloat($offset)
     {
         return (float) $this[$offset];
     }
