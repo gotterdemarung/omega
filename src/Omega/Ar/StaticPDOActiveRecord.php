@@ -184,6 +184,37 @@ abstract class StaticPDOActiveRecord implements \ArrayAccess
     }
 
     /**
+     * Magic getter
+     *
+     * @param string $key
+     * @return mixed
+     */
+    public function __get($key)
+    {
+        return $this->offsetGet($key);
+    }
+
+    /**
+     * Magic setter
+     *
+     * @param string $key
+     * @param mixed  $value
+     * @return void
+     */
+    public function __set($key, $value)
+    {
+        $this->offsetSet($key, $value);
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return get_class($this) . ' #' . $this->getId();
+    }
+
+    /**
      * Returns integer value
      *
      * @param string $offset
@@ -192,6 +223,17 @@ abstract class StaticPDOActiveRecord implements \ArrayAccess
     protected function _getInt($offset)
     {
         return (int) $this[$offset];
+    }
+
+    /**
+     * Returns float value
+     *
+     * @param string $offset
+     * @return float
+     */
+    protected function _getString($offset)
+    {
+        return (float) $this[$offset];
     }
 
     /**
