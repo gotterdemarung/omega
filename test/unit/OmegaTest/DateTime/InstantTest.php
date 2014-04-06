@@ -15,7 +15,7 @@ class InstantTest extends Test
     protected function assertConstruct($expect, $argument, $precision = null)
     {
         $x = new Instant($argument, $precision);
-        $this->assertSame($expect, $x->getFloat());
+        $this->assertSame($expect, $x->toFloat());
     }
 
     public function testConstructor()
@@ -67,43 +67,43 @@ class InstantTest extends Test
     public function testDayBegin()
     {
         $x = new Instant(123456789.76, 2);
-        $this->assertSame(123454800, $x->getDayBegin()->getTimestamp());
+        $this->assertSame(123454800, $x->getDayBegin()->toInt());
     }
 
     public function testDayEnd()
     {
         $x = new Instant(123456789.76, 2);
-        $this->assertSame(123541199, $x->getDayEnd()->getTimestamp());
+        $this->assertSame(123541199, $x->getDayEnd()->toInt());
     }
 
     public function testGetFloat()
     {
         $x = new Instant(123456789.76, 2);
-        $this->assertSame(123456789.76, $x->getFloat());
+        $this->assertSame(123456789.76, $x->toFloat());
     }
 
     public function testGetInt()
     {
         $x = new Instant(123456789.76, 2);
-        $this->assertSame(123456789, $x->getTimestamp());
+        $this->assertSame(123456789, $x->toInt());
     }
 
     public function testGetMySQLDate()
     {
         $x = new Instant(123456789.76, 2);
-        $this->assertSame('1973-11-30', $x->getMySQLDate());
+        $this->assertSame('1973-11-30', $x->toMySQLDate());
     }
 
     public function testGetMySQLDateTime()
     {
         $x = new Instant(123456789.76, 2);
-        $this->assertSame('1973-11-30 00:33:09', $x->getMySQLDateTime());
+        $this->assertSame('1973-11-30 00:33:09', $x->toMySQLDateTime());
     }
 
     public function testGetUnixTimestamp()
     {
         $x = new Instant(123456789.76, 2);
-        $this->assertSame(123456789, $x->getTimestamp());
+        $this->assertSame(123456789, $x->toInt());
     }
 
     public function testBiggerThan()
@@ -123,7 +123,7 @@ class InstantTest extends Test
     public function testStaticNow()
     {
         $start = microtime(true);
-        $x = Instant::now()->getFloat();
+        $x = Instant::now()->toFloat();
         $this->assertGreaterThanOrEqual($start, $x);
         $this->assertLessThanOrEqual(microtime(true), $x);
     }
@@ -140,7 +140,7 @@ class InstantTest extends Test
 
     public function testStaticMkTime()
     {
-        $this->assertSame(1146711721, Instant::create(3, 2, 1, 5, 4, 6)->getTimestamp());
+        $this->assertSame(1146711721, Instant::create(3, 2, 1, 4, 5, 6)->toInt());
     }
 
 }

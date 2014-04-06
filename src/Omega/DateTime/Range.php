@@ -26,7 +26,7 @@ class Range
      * @param Instant $instant
      * @return Range
      */
-    public static function thisMonth(Instant $instant = null)
+    public static function fullMonth(Instant $instant = null)
     {
         if ($instant === null) {
             $instant = Instant::now();
@@ -77,7 +77,7 @@ class Range
      */
     public function getNormalized()
     {
-        if ($this->getEnd()->getFloat() < $this->getEnd()->getFloat()) {
+        if ($this->getEnd()->toFloat() < $this->getEnd()->toFloat()) {
             return new static($this->getEnd(), $this->getBegin());
         }
 

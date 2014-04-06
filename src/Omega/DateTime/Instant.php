@@ -50,8 +50,8 @@ class Instant
      * @param int $hour
      * @param int $minute
      * @param int $second
-     * @param int $month
      * @param int $day
+     * @param int $month
      * @param int $year
      * @return Instant
      */
@@ -59,8 +59,8 @@ class Instant
         $hour,
         $minute,
         $second,
-        $month,
         $day,
+        $month,
         $year
     )
     {
@@ -117,7 +117,7 @@ class Instant
      *
      * @return float
      */
-    public function getFloat()
+    public function toFloat()
     {
         return (float) $this->_value;
     }
@@ -127,7 +127,7 @@ class Instant
      *
      * @return int
      */
-    public function getTimestamp()
+    public function toInt()
     {
         return (int) $this->_value;
     }
@@ -139,7 +139,7 @@ class Instant
      */
     public function getDayBegin()
     {
-        return new static(strtotime('today', $this->getTimestamp()));
+        return new static(strtotime('today', $this->toInt()));
     }
 
     /**
@@ -149,7 +149,7 @@ class Instant
      */
     public function getMidnight()
     {
-        return new static(strtotime('today', $this->getTimestamp()));
+        return new static(strtotime('today', $this->toInt()));
     }
 
     /**
@@ -159,7 +159,7 @@ class Instant
      */
     public function getDayEnd()
     {
-        return new static(strtotime('tomorrow', $this->getTimestamp()) - 1);
+        return new static(strtotime('tomorrow', $this->toInt()) - 1);
     }
 
     /**
@@ -170,7 +170,7 @@ class Instant
      */
     public function getMonthBeginDay()
     {
-        return new static(strtotime('first day of this month', $this->getTimestamp()));
+        return new static(strtotime('first day of this month', $this->toInt()));
     }
 
     /**
@@ -181,7 +181,7 @@ class Instant
      */
     public function getMonthEndDay()
     {
-        return new static(strtotime('last day of this month', $this->getTimestamp()));
+        return new static(strtotime('last day of this month', $this->toInt()));
     }
 
     /**
@@ -192,7 +192,7 @@ class Instant
      */
     public function format($format)
     {
-        return date($format, $this->getTimestamp());
+        return date($format, $this->toInt());
     }
 
 
@@ -201,7 +201,7 @@ class Instant
      *
      * @return string
      */
-    public function getMySQLDateTime()
+    public function toMySQLDateTime()
     {
         return $this->format('Y-m-d H:i:s');
     }
@@ -211,7 +211,7 @@ class Instant
      *
      * @return string
      */
-    public function getMySQLDate()
+    public function toMySQLDate()
     {
         return $this->format('Y-m-d');
     }
@@ -263,6 +263,6 @@ class Instant
      */
     public function __toString()
     {
-        return $this->getMySQLDateTime();
+        return $this->toMySQLDateTime();
     }
 }
