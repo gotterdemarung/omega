@@ -356,7 +356,7 @@ abstract class StaticPDOActiveRecord implements \ArrayAccess
                 $table  = $this->getCollection();
                 $keys   = array_map(function($x) {return "`$x`";}, array_keys($this->_changes));
                 $values = array_values($this->_changes);
-                $ph     = array_map(function($x){return ':' . $x;}, $keys);
+                $ph     = array_map(function($x){return ':' . $x;}, array_keys($this->_changes));
                 $total  = array();
                 // JOINING
                 for ($i = 0; $i < count($keys); $i++) {
@@ -390,6 +390,6 @@ abstract class StaticPDOActiveRecord implements \ArrayAccess
     public function equals(StaticPDOActiveRecord $another)
     {
         return get_class($this) == get_class($another)
-            && $this->getId() == $another->getId();
+        && $this->getId() == $another->getId();
     }
 }
