@@ -185,6 +185,16 @@ class Instant
     }
 
     /**
+     * Returns amount of days current instant points to
+     *
+     * @return int
+     */
+    public function getDaysInMonthCount()
+    {
+        return (int) $this->format('t');
+    }
+
+    /**
      * Returns date in specific format
      *
      * @param string $format http://php.net/manual/en/function.date.php
@@ -214,6 +224,37 @@ class Instant
     public function toMySQLDate()
     {
         return $this->format('Y-m-d');
+    }
+
+    /**
+     * Returns true if current instant points to midnight
+     *
+     * @return bool
+     */
+    public function isMidnight()
+    {
+        return $this->format('H:i:s') === '00:00:00';
+    }
+
+    /**
+     * Returns true if current instant points to day end
+     *
+     * @return bool
+     */
+    public function isDayEnd()
+    {
+        return $this->format('H:i:s') === '23:59:59';
+    }
+
+    /**
+     * Returns true if current and provided instants both points to same month
+     *
+     * @param Instant $other
+     * @return bool
+     */
+    public function isSameMonth(Instant $other)
+    {
+        return $this->format('m.Y') === $other->format('m.Y');
     }
 
     /**

@@ -84,4 +84,36 @@ class Range
         return $this;
     }
 
+    /**
+     * Returns rounded amount of days between begin and end
+     *
+     * @return float
+     */
+    public function getDaysCountRounded()
+    {
+        return round(($this->getEnd()->toFloat() - $this->getBegin()->toFloat()) / 86400);
+    }
+
+    /**
+     * Returns true, if current period points to whole month
+     *
+     * @return bool
+     */
+    public function isFullMonth()
+    {
+        return $this->getBegin()->isMidnight()
+        && $this->getEnd()->isDayEnd()
+        && $this->getBegin()->isSameMonth($this->getEnd());
+    }
+
+    /**
+     * Magic method
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return '[' . $this->getBegin() . ' - ' . $this->getEnd() . ']';
+    }
+
 } 
